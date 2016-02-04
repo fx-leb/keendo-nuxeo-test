@@ -1,0 +1,20 @@
+
+*.iml
+
+## Directory-based project format:
+.idea/
+
+# /
+/.settings
+/.project
+/target
+.project
+
+# /
+*/.settings
+*/.project
+*/target
+*/bin
+*/.classpath
+*/*.log*
+/docker-image/nbactions.xml
