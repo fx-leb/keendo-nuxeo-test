@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:nxs="http://www.nuxeo.org/ecm/project/schemas/keendo/simple"
+           targetNamespace="http://www.nuxeo.org/ecm/project/schemas/keendo/simple">
+
+  <xs:simpleType name="simpleList"> 
+    <xs:list itemType="xs:string"/> 
+  </xs:simpleType>  
+       
+<xs:element name="simpleList" type="nxs:simpleList"/>
+
+</xs:schema>
+
+
+
