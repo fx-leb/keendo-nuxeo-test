@@ -9,9 +9,6 @@
          <xs:element name="item" type="nxs:complex" minOccurs="0" maxOccurs="unbounded"/>   
       </xs:sequence>
    </xs:complexType>
-   
-
-   
        
    <xs:complexType name="complex">
       <xs:sequence>
@@ -20,4 +17,3 @@
       </xs:sequence>
    </xs:complexType>
 </xs:schema>
-

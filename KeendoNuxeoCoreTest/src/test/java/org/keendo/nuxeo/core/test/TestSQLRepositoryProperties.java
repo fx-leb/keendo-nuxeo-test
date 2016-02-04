@@ -32,9 +32,8 @@ public class TestSQLRepositoryProperties {
     DocumentModel         doc;
 
     /**
-     * Checks reset of a simple element of complex list element.
      *
-     * [{"foo": "bar", "foo2": "bar2"}] => [{"foo": "bar", "foo2": "bar2"}]
+     * [{"foobar": "foobarValue", "foobar2": "foobar2Value"}] => [{"foobar2": "foobar2Value"}]
      *
      */
     @Test
@@ -62,5 +61,122 @@ public class TestSQLRepositoryProperties {
         Assert.assertEquals("foobar2Value", foobar2);
         final String foobar = (String) updatedComplexList.get(0).get("foobar");
         Assert.assertTrue(StringUtils.isEmpty(foobar));
+    }
+
+    /**
+     *
+     * {"foobar": "foobarValue", "foobar2": "foobar2Value"} => {"foobar2": "foobar2Value"}
+     *
+     */
+    @Test
+    public void resetSimpleSubPropertyOfComplex() {
+        DocumentModel doc = session.createDocumentModel("/", "mydoc", "MyDocType");
+
+        final Map<String, Serializable> complex = new HashMap<>();
+        complex.put("foobar", "foobarValue");
+        complex.put("foobar2", "foobar2Value");
+
+        doc.setPropertyValue("kc:complex", (Serializable) complex);
+        doc = session.createDocument(doc);
+        session.save();
+
+        complex.remove("foobar");
+        doc.setPropertyValue("kc:complex", (Serializable) complex);
+        doc = session.saveDocument(doc);
+        session.save();
+
+        final Map<String, Serializable> updated = (Map<String, Serializable>) doc.getPropertyValue("kc:complex");
+
+        final String foobar2 = (String) updated.get("foobar2");
+        Assert.assertEquals("foobar2Value", foobar2);
+        final String foobar = (String) updated.get("foobar");
+        Assert.assertTrue(StringUtils.isEmpty(foobar));
+    }
+
+    /**
+     *
+     * ["foo", "foo2"] => ["","foo2"]
+     *
+     */
+    @Test
+    public void updateSimpleList() {
+        DocumentModel doc = session.createDocumentModel("/", "mydoc", "MyDocType");
+
+        final String[] simpleList = { "foo", "foo2" };
+        final String[] firstEltIsEmpty = { "", "foo2" };
+
+        doc.setPropertyValue("ks:simpleList", simpleList);
+        doc = session.createDocument(doc);
+        session.save();
+
+        doc.setPropertyValue("ks:simpleList", firstEltIsEmpty);
+        doc = session.saveDocument(doc);
+        session.save();
+
+        final String[] updated = (String[]) doc.getPropertyValue("ks:simpleList");
+
+        Assert.assertNotNull(updated);
+        Assert.assertTrue(updated.length == 2);
+        Assert.assertEquals(updated[0], "");
+        Assert.assertEquals(updated[1], "foo2");
+    }
+
+    /**
+     *
+     * ["foo", "foo2"] => [""]
+     *
+     */
+    @Test
+    public void updateSimpleList2() {
+        DocumentModel doc = session.createDocumentModel("/", "mydoc", "MyDocType");
+
+        final String[] simpleList = { "foo" };
+        final String[] firstEltIsEmpty = { "" };
+
+        doc.setPropertyValue("ks:simpleList", simpleList);
+        doc = session.createDocument(doc);
+        session.save();
+
+        doc.setPropertyValue("ks:simpleList", firstEltIsEmpty);
+        doc = session.saveDocument(doc);
+        session.save();
+
+        final String[] updated = (String[]) doc.getPropertyValue("ks:simpleList");
+
+        Assert.assertNotNull(updated);
+        Assert.assertTrue(updated.length == 1);
+        Assert.assertEquals(updated[0], "");
+    }
+
+    /**
+     *
+     * {"array": ["foo"]} => {"array": [""]}
+     *
+     */
+    @Test
+    public void updateListInsideComplex() {
+        DocumentModel doc = session.createDocumentModel("/", "mydoc", "MyDocType");
+
+        final String[] array = { "foo" };
+        final String[] emptyArray = { "" };
+
+        final Map<String, Serializable> complex = new HashMap<>();
+        complex.put("array", array);
+
+        doc.setPropertyValue("kc:complexWithArrayElt", (Serializable) complex);
+        doc = session.createDocument(doc);
+        session.save();
+
+        complex.put("array", emptyArray);
+        doc.setPropertyValue("kc:complexWithArrayElt", (Serializable) complex);
+        doc = session.saveDocument(doc);
+        session.save();
+
+        final Map<String, Serializable> updated = (Map<String, Serializable>) doc.getPropertyValue("kc:complexWithArrayElt");
+
+        final String[] arrayUpdated = (String[]) updated.get("array");
+        Assert.assertNotNull(arrayUpdated);
+        Assert.assertTrue(arrayUpdated.length == 1);
+        Assert.assertEquals(arrayUpdated[0], "");
     }
 }
